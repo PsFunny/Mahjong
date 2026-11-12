@@ -1,0 +1,90 @@
+Yaku:
+
+1 Han:
+    Riichi (Win after calling riichi)
+        riichi_discard != 0
+    Double Riichi (Declare riichi on your first discard) *Riichi
+        riichi_discard == 1
+    Menzen Tsumo (Win with a closed hand)
+        !open
+    Ippatsu (Win on the turn after calling riichi) *Riichi
+        discards == riichi_discard
+    Pinfu (All sequences, non-yakuhai pair, 2-sided wait, closed)
+        !open && !triplets && !yakuhai_pair && wait_sides() == 2
+    Iipeikou "Pure Double Chi" (Pair of identical sequences, closed)
+        !open && double_straights() >= 1
+    Tanyao (All simples)
+        !terminals && !honors
+    Yakuhai (One group of dragons, seat winds, or round winds)
+        yakuhai_triplet
+
+2 Han:
+    Chantaiyao "Half Outside Hand" (All groups and pair contain a terminal or an honor)
+        !insides
+        -1 Han if open
+    Sanshoku Doujun "Triple Chi" (Same sequence in all suits)
+        non_identical_straights - 2 * identical_straights == 3
+        -1 Han if open
+    Ittsuu "Pure Straight" (sequence of sequences in the same suit)
+        gapped_straights - 2 * identical_straights == 3
+        -1 Han if open
+    Toitoi "All Pon" (All triplets and/or quads)
+        !straights
+    Sanankou "Three Concealed Pon" (Three closed triplets and/or quads)
+        closed_triplets == 3
+    Sanshoku Doukou "Triple Pon" (Three triplets and/or quads with the same value)
+        non_identical_triplets >= 3
+    Sankantsu "Three Kan" (Three quads)
+        kans == 3
+    Chiitoitsu "Seven Pairs" (Seven different pairs, closed)
+        special()
+    Honroutou (All terminals or honors) *Chantaiyao
+        !simples
+    Shousangen "Little Three Dragons" (Two groups of dragons and one pair of dragons) *Yakuhai
+        dragon_triplets == 2 && dragon_pair
+
+3 Han:
+    Honitsu "Half Flush" (Single suit + honors)
+        suits() == 1
+        -1 Han if open
+    Junchan "Fully Outside Hand" (All groups and pair contain a terminal, no honors) *Chantaiyao
+        !insides && !honors
+        -1 Han if open
+    Ryanpeikou "Twice Pure Double Chi" (Two pairs of identical sequences, closed) *Iipeikou, Chiitoitsu sometimes, Toitoi sometimes
+        !open && double_straights() == 2
+
+6 Han:
+    Chinitsu "Full Flush" (All one suit, no honors) *Honitsu
+        suits() == 1 && !honors
+        -1 Han if open
+
+13 Han (Yakuman):
+    Kokushi Musou "Thirteen Orphans" (Only Each Terminal and Honor)
+        special()
+        +Double Yakuman if wait_sides() == 13
+    Chiihou "Blessing of Earth" (Win on your first draw as non-dealer)
+        !dealer && discards == 0
+    Tenhou "Blessing of Heaven" (Win on your first draw as dealer)
+        dealer && discards == 0
+    Suuankou "Four Concealed Pon" (Four closed triplets and/or quads) *Toitoi, Sanankou
+        closed_triplets == 4
+        !open && !straights
+    Daisangen "Big Three Dragons" (Three groups of dragons) *Shousangen
+        dragon_triplets == 3
+    Shousuushii "Little Four Winds" (Three groups of winds and one pair of winds)
+        wind_triplets == 3 && wind_pair
+    Daisuushii "Big Four Winds" (Four groups of winds) *Yakuhai, Shousuushii, Toitoi
+        wind_triplets == 4
+    Tsuuiisou (All honors) *Honroutou
+        !simples && !terminals
+        suits() == 0
+    Chinroutou (All terminals) *Honroutou
+        !simples && !honors
+    Ryuuiisou "All Green" (Bamboo 2, 3, 4, 6, 8, or green dragon) *Honitsu
+        !non_greens
+    Chuuren Poutou "Nine Gates" (closed, 1112345678999 + 1 extra, and all in same suit. No kan) *Ittsuu sometimes, Chinitsu
+        special()
+        +Double Yakuman if wait_sides() == 9
+    Suukantsu (Four quads) *Sankantsu, Toitoi
+        kans == 4
+        Only possible if already in tenpai for Sankantsu, can be in riichi or not
